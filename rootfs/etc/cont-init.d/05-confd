@@ -1,0 +1,3 @@
+#!/usr/bin/with-contenv sh
+
+confd -log-level debug -onetime -backend env
