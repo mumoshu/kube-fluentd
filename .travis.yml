@@ -1,0 +1,25 @@
+sudo: required
+
+services:
+  - docker
+
+env:
+  - FLUENTD_VERSION=0.14.1
+
+before_install:
+  - make load-docker-cache
+  - make build
+
+script:
+  - make test
+
+after_success:
+  - make save-docker-cache
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    make publish;
+    fi
+
+cache:
+  directories:
+    - docker-cache
