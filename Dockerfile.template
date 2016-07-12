@@ -84,11 +84,11 @@ COPY fluent.conf /fluentd/etc/
 
 RUN sed -i -e 's/type/@type/g' /fluentd/etc/fluent.conf
 
-ENV FLUENTD_OPT=""
+ENV FLUENTD_ARGS="-v"
 ENV FLUENTD_CONF="fluent.conf"
 
 EXPOSE 24224 5140
 
 ENTRYPOINT [ "/init" ]
 
-CMD /bin/s6-envuidgid fluent fluentd -c /fluentd/etc/$FLUENTD_CONF -p /fluentd/plugins $FLUENTD_OPT
+CMD /bin/s6-envuidgid fluent fluentd -c /fluentd/etc/$FLUENTD_CONF -p /fluentd/plugins $FLUENTD_ARGS
