@@ -19,3 +19,15 @@ Based on:
  * `latest`/`0.14.1-0.9.0` (Fluentd v0.14.1)
 
 Naming convention for images is `$FLUENTD_VERSION`-`$KUBE_FLUENTD_VERSION`
+
+## Usage in Kubernetes
+
+```
+# (1) Provide GOOGLE_FLEUNTD_* environments appropriate values
+# (2) Build the definition for a k8s secret object
+$ make fluentd.secret.yaml
+# (3) Create the secret object from the definition
+$ kubectl create -f fluentd.secret.yaml
+# (4) Create a fluentd daemonset that reads and depends on the secret
+$ kubectl create -f fluentd.daemonset.yaml
+```

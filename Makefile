@@ -60,3 +60,22 @@ docker-run:
 	  -e GOOGLE_FLUENTD_CLIENT_ID="$(GOOGLE_FLUENTD_CLIENT_ID)" \
 	  -e GOOGLE_FLUENTD_CLIENT_X509_CERT_URL="$(GOOGLE_FLUENTD_CLIENT_X509_CERT_URL)" \
 	$(IMAGE) $(DOCKER_CMD)
+
+define SECRET_YAML
+apiVersion: v1
+kind: Secret
+metadata:
+  name: fluentd
+type: Opaque
+data:
+  private.key.id: $(shell bash -c 'echo -n "$$GOOGLE_FLUENTD_PRIVATE_KEY_ID" | base64')
+  private.key: $(shell bash -c 'echo -n "$$GOOGLE_FLUENTD_PRIVATE_KEY" | base64')
+  project.id: $(shell bash -c 'echo -n "$$GOOGLE_FLUENTD_PROJECT_ID" | base64')
+  client.email: $(shell bash -c 'echo -n "$$GOOGLE_FLUENTD_CLIENT_EMAIL" | base64')
+  client.id: $(shell bash -c 'echo -n "$$GOOGLE_FLUENTD_CLIENT_ID" | base64')
+  client.x509.cert.url: $(shell bash -c 'echo -n "$$GOOGLE_FLUENTD_CLIENT_X509_CERT_URL" | base64')
+endef
+export SECRET_YAML
+
+fluentd.secret.yaml:
+	echo "$$SECRET_YAML" > fluentd.secret.yaml
