@@ -16,9 +16,13 @@ Based on:
 
 ## Supported tags
 
- * `latest`/`0.14.1-0.9.0` (Fluentd v0.14.1)
+ * `latest`/`0.14.1-0.9.1` (Fluentd v0.14.1)
 
 Naming convention for images is `$FLUENTD_VERSION`-`$KUBE_FLUENTD_VERSION`
+
+## Changelog
+
+* `0.9.1` # Use multiple threads for processing as per [a change in GoogleCloudPlatform/google-fluentd](https://github.com/GoogleCloudPlatform/google-fluentd/commit/283eb7052d3a256078f37d03e8ea3a496794a28f)
 
 ## Usage in Kubernetes
 
