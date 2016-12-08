@@ -1,19 +1,24 @@
-FROM alpine:3.4
+FROM gcr.io/google_containers/ubuntu-slim:0.4
 MAINTAINER Yusuke KUOKA <ykuoka@gmail.com>
 
-ENV S6_OVERLAY_VERSION=v1.17.2.0
+# Ensure there are enough file descriptors for running Fluentd.
+RUN ulimit -n 65536
 
-RUN apk add --update --no-cache wget \
+# Disable prompts from apt.
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN apt-get update -y \
+ && apt-get install -y wget \
  && wget https://github.com/just-containers/s6-overlay/releases/download/v1.17.1.1/s6-overlay-amd64.tar.gz --no-check-certificate -O /tmp/s6-overlay.tar.gz \
  && tar xvfz /tmp/s6-overlay.tar.gz -C / \
  && rm -f /tmp/s6-overlay.tar.gz \
- && apk del wget
+ && apt-get remove --purge -y wget
 
 # Until confd package arrives to Alpine packages, build it ourselves:
 # Installation process inspired by: https://github.com/smebberson/docker-alpine/blob/master/alpine-confd/Dockerfile
 ENV CONFD_VERSION=0.11.0
 
-RUN apk add --no-cache go git gcc musl-dev && \
+RUN  apt-get install -y golang git gcc musl-dev && \
     git clone https://github.com/kelseyhightower/confd.git /src/confd && \
     cd /src/confd && \
     git checkout -q --detach "v$CONFD_VERSION" && \
@@ -21,17 +26,17 @@ RUN apk add --no-cache go git gcc musl-dev && \
     GOPATH=/src/confd/vendor:/src/confd go build -a -installsuffix cgo -ldflags '-extld ld -extldflags -static' -x . && \
     mv ./confd /bin/ && \
     chmod +x /bin/confd && \
-    apk del go git gcc musl-dev && \
+    apt-get remove --purge -y golang git gcc musl-dev && \
     rm -rf /src
 
 # Use https://github.com/janeczku/go-dnsmasq to support `search` directive or etc in /etc/resolve.conf
 # Installation process inspired by: https://github.com/janeczku/docker-alpine-kubernetes/blob/master/versions/3.3/Dockerfile
 ENV GODNSMASQ_VERSION=1.0.6
 
-RUN apk add --no-cache curl && \
+RUN apt-get install -y curl && \
     curl -sSL https://github.com/janeczku/go-dnsmasq/releases/download/${GODNSMASQ_VERSION}/go-dnsmasq-min_linux-amd64 -o /bin/go-dnsmasq && \
     chmod +x /bin/go-dnsmasq && \
-    apk del curl
+    apt-get remove --purge -y curl
 
 # Directs output from go-dnsmasq to:
 ENV GO_DNSMASQ_LOG_FILE /dev/stdout
@@ -40,13 +45,14 @@ ENV FLUENTD_VERSION %%FLUENTD_VERSION%%
 
 # Do not split this into multiple RUN!
 # Docker creates a layer for every RUN-Statement
-# therefore an 'apk delete build*' has no effect
-RUN apk --no-cache --update add \
-                            build-base \
-                            ca-certificates \
-                            ruby \
-                            ruby-irb \
-                            ruby-dev && \
+# therefore an 'apt remove --purge -y build*' has no effect
+RUN apt-get install -y \
+                    procps \
+                    build-essential \
+                    ca-certificates \
+                    ruby \
+                    ruby-dev \
+                    libjemalloc1 && \
     echo 'gem: --no-document' >> /etc/gemrc && \
     gem install oj && \
     gem install fluentd -v $FLUENTD_VERSION && \
@@ -54,11 +60,12 @@ RUN apk --no-cache --update add \
     gem install fluent-plugin-google-cloud && \
     gem install fluent-plugin-kubernetes_metadata_filter && \
     gem install fluent-plugin-record-reformer && \
-    apk del build-base ruby-dev && \
+    apt-get remove --purge -y build-essential ruby-dev && \
+    apt-get clean -y && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/*
 
-RUN adduser -D -g '' -u 1000 -h /home/fluent fluent
-RUN chown -R fluent:fluent /home/fluent
+RUN adduser --disabled-password --disabled-login --gecos "" --uid 1000 --home /home/fluent fluent
+RUN chown fluent:fluent -R /home/fluent
 
 # for log storage (maybe shared with host)
 RUN mkdir -p /fluentd/log
@@ -83,6 +90,9 @@ COPY rootfs /
 COPY fluent.conf /fluentd/etc/
 
 RUN sed -i -e 's/type/@type/g' /fluentd/etc/fluent.conf
+
+ENV JEMALLOC_PATH /usr/lib/x86_64-linux-gnu/libjemalloc.so.1
+ENV LD_PRELOAD $JEMALLOC_PATH
 
 ENV FLUENTD_ARGS="-v"
 ENV FLUENTD_CONF="fluent.conf"
