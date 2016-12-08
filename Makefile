@@ -17,6 +17,10 @@ SAVED_IMAGE ?= $(DOCKER_CACHE)/image-$(FLUENTD_VERSION).tar
 build: $(DOCKERFILE) $(ROOTFS) $(FLUENT_CONF)
 	cd $(BUILD_ROOT) && docker build -t $(IMAGE) . && docker tag $(IMAGE) $(ALIAS)
 
+.PHONY: clean
+clean:
+	rm -rf $(BUILD_ROOT)
+
 publish:
 	docker push $(IMAGE) && docker push $(ALIAS)
 
