@@ -8,7 +8,7 @@ A docker image for running fluentd in Kubernetes pods.
 
 Based on:
 
-* Alpine Linux 3.4
+* [gcr.io/google_containers/ubuntu-slim](https://console.cloud.google.com/kubernetes/images/tags/ubuntu-slim?location=GLOBAL&project=google-containers)
 * [Fluentd](https://github.com/fluent/fluentd)
 * [s6-overlay](https://github.com/just-containers/s6-overlay)
 * [confd](https://github.com/kelseyhightower/confd)
