@@ -13,32 +13,6 @@ RUN apt-get update -y \
  && apt-get autoremove -y \
  && apt-get clean
 
-# Until confd package arrives to apt packages, build it ourselves:
-# Installation process initially inspired by https://github.com/smebberson/docker-alpine/blob/master/alpine-confd/Dockerfile
-# and later adapted to Ubuntu.
-# CONF_VERSION can be any git ref like commit id, branch, tag
-# ENV CONFD_VERSION=master
-ENV CONFD_VERSION=v0.11.0
-
-ENV GOPATH /go
-
-RUN apt-get install -y --no-install-recommends golang git ssh && \
-    mkdir -p ~/.ssh && ssh-keyscan -t rsa github.com > ~/.ssh/known_hosts && \
-    mkdir -p $GOPATH/src/github.com/kelseyhightower && \
-    git clone https://github.com/kelseyhightower/confd.git $GOPATH/src/github.com/kelseyhightower/confd && \
-    cd $GOPATH/src/github.com/kelseyhightower/confd && \
-    git checkout -q --detach "$CONFD_VERSION" && \
-    # For legacy confd branch with non-standard file structure
-    if [ -d src/github.com/kelseyhightower/confd ]; then echo fixing file tree to conform this project to standard golang project structure; mv src/github.com/kelseyhightower/confd/* .; fi && \
-    if [ -d vendor/src ]; then echo fixing vendor to conform this project to standard golang project structure; mv vendor/src/* vendor/; fi && \
-    go build . && \
-    mv confd /bin/ && \
-    chmod +x /bin/confd && \
-    apt-get remove --purge -y golang git ssh libgcc-5-dev cpp-5 && \
-    apt-get autoremove -y && \
-    apt-get clean && \
-    rm -rf $GOPATH
-
 ENV FLUENTD_VERSION %%FLUENTD_VERSION%%
 
 # Do not split this into multiple RUN!

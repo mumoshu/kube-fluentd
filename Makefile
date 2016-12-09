@@ -1,4 +1,4 @@
-KUBE_FLUENTD_VERSION ?= 0.9.3
+KUBE_FLUENTD_VERSION ?= 0.9.4
 FLUENTD_VERSION ?= 0.14.9
 
 REPOSITORY ?= mumoshu/kube-fluentd
@@ -15,6 +15,7 @@ SAVED_IMAGE ?= $(DOCKER_CACHE)/image-$(FLUENTD_VERSION).tar
 
 .PHONY: build
 build: $(DOCKERFILE) $(ROOTFS) $(FLUENT_CONF)
+	./build-confd
 	cd $(BUILD_ROOT) && docker build -t $(IMAGE) . && docker tag $(IMAGE) $(ALIAS)
 
 .PHONY: clean

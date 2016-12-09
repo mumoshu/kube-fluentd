@@ -1,0 +1,39 @@
+#!/bin/bash
+
+set -vxe
+
+# Until confd package arrives to apt packages, build it ourselves:
+# Installation process initially inspired by https://github.com/smebberson/docker-alpine/blob/master/alpine-confd/Dockerfile
+# and later adapted to Ubuntu.
+# CONF_VERSION can be any git ref like commit id, branch, tag
+# ENV CONFD_VERSION=master
+export CONFD_VERSION=v0.11.0
+
+export GOPATH=$(pwd)/go/confd
+export REPO_PATH=$GOPATH/src/github.com/kelseyhightower
+mkdir -p $REPO_PATH
+
+export CONFD_PATH=$REPO_PATH/confd
+
+if [ -d "$CONFD_PATH" ]; then
+  rm -rf $CONFD_PATH
+fi
+
+git clone https://github.com/kelseyhightower/confd.git $GOPATH/src/github.com/kelseyhightower/confd
+
+pushd $GOPATH/src/github.com/kelseyhightower/confd
+
+git checkout -q --detach "$CONFD_VERSION"
+
+# For legacy confd branch with non-standard file structure
+if [ -d src/github.com/kelseyhightower/confd ]; then echo fixing file tree to conform this project to standard golang project structure; mv src/github.com/kelseyhightower/confd/* .; fi && \
+if [ -d vendor/src ]; then echo fixing vendor to conform this project to standard golang project structure; mv vendor/src/* vendor/; fi && \
+
+CGO_ENABLED=0 GOOS=linux go build -a -tags netgo -ldflags '-w' .
+
+chmod +x confd
+
+popd
+
+mkdir -p rootfs/bin
+cp $CONFD_PATH/confd rootfs/bin/
