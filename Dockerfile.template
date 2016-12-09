@@ -4,21 +4,17 @@ MAINTAINER Yusuke KUOKA <ykuoka@gmail.com>
 # Disable prompts from apt.
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt-get update -y \
- && apt-get install -y --no-install-recommends ca-certificates wget \
- && wget https://github.com/just-containers/s6-overlay/releases/download/v1.17.1.1/s6-overlay-amd64.tar.gz --no-check-certificate -O /tmp/s6-overlay.tar.gz \
- && tar xvfz /tmp/s6-overlay.tar.gz -C / \
- && rm -f /tmp/s6-overlay.tar.gz \
- && apt-get remove --purge -y wget \
- && apt-get autoremove -y \
- && apt-get clean
-
 ENV FLUENTD_VERSION %%FLUENTD_VERSION%%
 
 # Do not split this into multiple RUN!
 # Docker creates a layer for every RUN-Statement
 # therefore an 'apt remove --purge -y build*' has no effect
-RUN apt-get install --no-install-recommends -y \
+RUN apt-get update -y \
+ && apt-get install -y --no-install-recommends ca-certificates wget \
+ && wget https://github.com/just-containers/s6-overlay/releases/download/v1.17.1.1/s6-overlay-amd64.tar.gz --no-check-certificate -O /tmp/s6-overlay.tar.gz \
+ && tar xvfz /tmp/s6-overlay.tar.gz -C / \
+ && rm -f /tmp/s6-overlay.tar.gz \
+ && apt-get install --no-install-recommends -y \
                     procps \
                     build-essential \
                     ca-certificates \
@@ -40,10 +36,10 @@ RUN apt-get install --no-install-recommends -y \
     gem install fluent-plugin-kubernetes_metadata_filter && \
     gem install fluent-plugin-record-reformer && \
     gem uninstall specific_install && \
-    apt-get remove --purge -y build-essential ruby-dev git libgcc-5-dev cpp-5 && \
+    apt-get remove --purge -y wget build-essential ruby-dev git libgcc-5-dev cpp-5 && \
     apt-get autoremove -y && \
     apt-get clean -y && \
-    rm -rf /tmp/* /var/tmp/*
+    rm -rf /tmp/* /var/tmp/* /var/cache/apt/archives/* /var/lib/apt/lists/*
 
 RUN adduser --disabled-password --disabled-login --gecos "" --uid 1000 --home /home/fluent fluent
 RUN chown fluent:fluent -R /home/fluent

@@ -16,12 +16,20 @@ Based on:
 
 ## Supported tags
 
- * `latest`/`0.14.2-0.9.2` (Fluentd v0.14.2)
+ * `latest`/`0.14.9-0.9.5` (Fluentd v0.14.9)
 
 Naming convention for images is `$FLUENTD_VERSION`-`$KUBE_FLUENTD_VERSION`
 
 ## Changelog
 
+* `0.9.5`
+  * Remove /var/lib/apt/lists/* to save approximately 20MB of image size
+* `0.9.4`
+  * Build confd outside of containers to save 1MB of image size
+* `0.9.3`
+  * Switch from alpine to ubuntu-slim:0.4
+  * Use jemalloc
+  * Fluentd 0.14.9
 * `0.9.2`
   * I had fixed the wrong part of fluent.conf in 0.9.1. Now I've done it right.
   * Bump Fluentd to 0.14.2 to fix [the issue reported in the metadata filter repo](https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter/issues/33#issuecomment-238377746)
