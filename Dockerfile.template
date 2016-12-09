@@ -11,20 +11,28 @@ RUN apt-get update -y \
  && rm -f /tmp/s6-overlay.tar.gz \
  && apt-get remove --purge -y wget
 
-# Until confd package arrives to Alpine packages, build it ourselves:
-# Installation process inspired by: https://github.com/smebberson/docker-alpine/blob/master/alpine-confd/Dockerfile
-ENV CONFD_VERSION=0.11.0
+# Until confd package arrives to apt packages, build it ourselves:
+# Installation process initially inspired by https://github.com/smebberson/docker-alpine/blob/master/alpine-confd/Dockerfile
+# and later adapted to Ubuntu.
+# CONF_VERSION can be any git ref like commit id, branch, tag
+# ENV CONFD_VERSION=master
+ENV CONFD_VERSION=v0.11.0
 
-RUN  apt-get install -y golang git gcc musl-dev && \
-    git clone https://github.com/kelseyhightower/confd.git /src/confd && \
-    cd /src/confd && \
-    git checkout -q --detach "v$CONFD_VERSION" && \
-    cd /src/confd/src/github.com/kelseyhightower/confd && \
-    GOPATH=/src/confd/vendor:/src/confd go build -a -installsuffix cgo -ldflags '-extld ld -extldflags -static' -x . && \
-    mv ./confd /bin/ && \
+ENV GOPATH /go
+
+RUN apt-get install -y golang git && \
+    mkdir -p $GOPATH/src/github.com/kelseyhightower && \
+    git clone https://github.com/kelseyhightower/confd.git $GOPATH/src/github.com/kelseyhightower/confd && \
+    cd $GOPATH/src/github.com/kelseyhightower/confd && \
+    git checkout -q --detach "$CONFD_VERSION" && \
+    # For legacy confd branch with non-standard file structure
+    if [ -d src/github.com/kelseyhightower/confd ]; then echo fixing file tree to conform this project to standard golang project structure; mv src/github.com/kelseyhightower/confd/* .; fi && \
+    if [ -d vendor/src ]; then echo fixing vendor to conform this project to standard golang project structure; mv vendor/src/* vendor/; fi && \
+    go build . && \
+    mv confd /bin/ && \
     chmod +x /bin/confd && \
-    apt-get remove --purge -y golang git gcc musl-dev && \
-    rm -rf /src
+    apt-get remove --purge -y golang git && \
+    rm -rf $GOPATH
 
 # Use https://github.com/janeczku/go-dnsmasq to support `search` directive or etc in /etc/resolve.conf
 # Installation process inspired by: https://github.com/janeczku/docker-alpine-kubernetes/blob/master/versions/3.3/Dockerfile
