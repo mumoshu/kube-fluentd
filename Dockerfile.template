@@ -5,11 +5,13 @@ MAINTAINER Yusuke KUOKA <ykuoka@gmail.com>
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update -y \
- && apt-get install -y wget \
+ && apt-get install -y --no-install-recommends ca-certificates wget \
  && wget https://github.com/just-containers/s6-overlay/releases/download/v1.17.1.1/s6-overlay-amd64.tar.gz --no-check-certificate -O /tmp/s6-overlay.tar.gz \
  && tar xvfz /tmp/s6-overlay.tar.gz -C / \
  && rm -f /tmp/s6-overlay.tar.gz \
- && apt-get remove --purge -y wget
+ && apt-get remove --purge -y wget \
+ && apt-get autoremove -y \
+ && apt-get clean
 
 # Until confd package arrives to apt packages, build it ourselves:
 # Installation process initially inspired by https://github.com/smebberson/docker-alpine/blob/master/alpine-confd/Dockerfile
@@ -20,7 +22,7 @@ ENV CONFD_VERSION=v0.11.0
 
 ENV GOPATH /go
 
-RUN apt-get install -y golang git && \
+RUN apt-get install -y --no-install-recommends golang git ssh && \
     mkdir -p ~/.ssh && ssh-keyscan -t rsa github.com > ~/.ssh/known_hosts && \
     mkdir -p $GOPATH/src/github.com/kelseyhightower && \
     git clone https://github.com/kelseyhightower/confd.git $GOPATH/src/github.com/kelseyhightower/confd && \
@@ -32,7 +34,9 @@ RUN apt-get install -y golang git && \
     go build . && \
     mv confd /bin/ && \
     chmod +x /bin/confd && \
-    apt-get remove --purge -y golang git && \
+    apt-get remove --purge -y golang git ssh libgcc-5-dev cpp-5 && \
+    apt-get autoremove -y && \
+    apt-get clean && \
     rm -rf $GOPATH
 
 ENV FLUENTD_VERSION %%FLUENTD_VERSION%%
@@ -40,7 +44,7 @@ ENV FLUENTD_VERSION %%FLUENTD_VERSION%%
 # Do not split this into multiple RUN!
 # Docker creates a layer for every RUN-Statement
 # therefore an 'apt remove --purge -y build*' has no effect
-RUN apt-get install -y \
+RUN apt-get install --no-install-recommends -y \
                     procps \
                     build-essential \
                     ca-certificates \
@@ -62,9 +66,10 @@ RUN apt-get install -y \
     gem install fluent-plugin-kubernetes_metadata_filter && \
     gem install fluent-plugin-record-reformer && \
     gem uninstall specific_install && \
-    apt-get remove --purge -y build-essential ruby-dev git && \
+    apt-get remove --purge -y build-essential ruby-dev git libgcc-5-dev cpp-5 && \
+    apt-get autoremove -y && \
     apt-get clean -y && \
-    rm -rf /tmp/* /var/tmp/* /var/cache/apk/*
+    rm -rf /tmp/* /var/tmp/*
 
 RUN adduser --disabled-password --disabled-login --gecos "" --uid 1000 --home /home/fluent fluent
 RUN chown fluent:fluent -R /home/fluent

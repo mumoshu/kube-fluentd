@@ -57,6 +57,10 @@ $(DOCKER_CACHE):
 docker-run: DOCKER_CMD ?=
 docker-run:
 	docker run --rm -it \
+	  --privileged \
+	  -v /mnt/sda1:/mnt/sda1 \
+	  -v /var/lib/docker/containers:/var/lib/docker/containers \
+	  -v /var/log:/var/log \
 	  -e GOOGLE_FLUENTD_PRIVATE_KEY_ID="$(GOOGLE_FLUENTD_PRIVATE_KEY_ID)" \
 	  -e GOOGLE_FLUENTD_PRIVATE_KEY="$(GOOGLE_FLUENTD_PRIVATE_KEY)" \
 	  -e GOOGLE_FLUENTD_PROJECT_ID="$(GOOGLE_FLUENTD_PROJECT_ID)" \
