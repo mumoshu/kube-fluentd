@@ -21,6 +21,7 @@ ENV CONFD_VERSION=v0.11.0
 ENV GOPATH /go
 
 RUN apt-get install -y golang git && \
+    mkdir -p ~/.ssh && ssh-keyscan -t rsa github.com > ~/.ssh/known_hosts && \
     mkdir -p $GOPATH/src/github.com/kelseyhightower && \
     git clone https://github.com/kelseyhightower/confd.git $GOPATH/src/github.com/kelseyhightower/confd && \
     cd $GOPATH/src/github.com/kelseyhightower/confd && \
@@ -34,18 +35,6 @@ RUN apt-get install -y golang git && \
     apt-get remove --purge -y golang git && \
     rm -rf $GOPATH
 
-# Use https://github.com/janeczku/go-dnsmasq to support `search` directive or etc in /etc/resolve.conf
-# Installation process inspired by: https://github.com/janeczku/docker-alpine-kubernetes/blob/master/versions/3.3/Dockerfile
-ENV GODNSMASQ_VERSION=1.0.6
-
-RUN apt-get install -y curl && \
-    curl -sSL https://github.com/janeczku/go-dnsmasq/releases/download/${GODNSMASQ_VERSION}/go-dnsmasq-min_linux-amd64 -o /bin/go-dnsmasq && \
-    chmod +x /bin/go-dnsmasq && \
-    apt-get remove --purge -y curl
-
-# Directs output from go-dnsmasq to:
-ENV GO_DNSMASQ_LOG_FILE /dev/stdout
-
 ENV FLUENTD_VERSION %%FLUENTD_VERSION%%
 
 # Do not split this into multiple RUN!
@@ -55,17 +44,25 @@ RUN apt-get install -y \
                     procps \
                     build-essential \
                     ca-certificates \
+                    git \
                     ruby \
                     ruby-dev \
                     libjemalloc1 && \
     echo 'gem: --no-document' >> /etc/gemrc && \
-    gem install oj && \
+    gem install specific_install && \
+    # minitest 5.x is required by activesupport. It is not a development dependency but a runtime dependency.
+    # minitest 5.x should be bundled in ruby since 2.2 but ruby from ubuntu seems to miss it therefore install it ourselves
+    gem install minitest oj && \
     gem install fluentd -v $FLUENTD_VERSION && \
     # We install fluent plugins here because doing so requires build-base and ruby-dev in order to build native extensions
-    gem install fluent-plugin-google-cloud && \
+    # fluent-plugin-google-cloud which supports fluentd 0.14.x is not yet released
+    # We at least need https://github.com/GoogleCloudPlatform/fluent-plugin-google-cloud/commit/0705183a98a59d327e82661a829d7e5caf99a82b
+    # or we'll end up with both fluentd 0.12.x and 0.14.x installed!
+    gem specific_install -l 'https://github.com/GoogleCloudPlatform/fluent-plugin-google-cloud.git' -b master && \
     gem install fluent-plugin-kubernetes_metadata_filter && \
     gem install fluent-plugin-record-reformer && \
-    apt-get remove --purge -y build-essential ruby-dev && \
+    gem uninstall specific_install && \
+    apt-get remove --purge -y build-essential ruby-dev git && \
     apt-get clean -y && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/*
 
