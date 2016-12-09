@@ -12,7 +12,6 @@ Based on:
 * [Fluentd](https://github.com/fluent/fluentd)
 * [s6-overlay](https://github.com/just-containers/s6-overlay)
 * [confd](https://github.com/kelseyhightower/confd)
-* [go-dnsmasq](https://github.com/janeczku/go-dnsmasq)
 
 ## Supported tags
 
