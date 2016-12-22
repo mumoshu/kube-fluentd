@@ -21,6 +21,9 @@ Naming convention for images is `$FLUENTD_VERSION`-`$KUBE_FLUENTD_VERSION`
 
 ## Changelog
 
+* `0.9.6`
+  * Fix the fluentd OOM issue when ingesting a lot of log
+    * Also see https://github.com/fluent/fluentd/issues/1260 for why we don't use `overflow_action block`
 * `0.9.5`
   * Remove /var/lib/apt/lists/* to save approximately 20MB of image size
 * `0.9.4`
