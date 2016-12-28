@@ -71,7 +71,7 @@ RUN sed -i -e 's/type/@type/g' /fluentd/etc/fluent.conf
 ENV JEMALLOC_PATH /usr/lib/x86_64-linux-gnu/libjemalloc.so.1
 ENV LD_PRELOAD $JEMALLOC_PATH
 
-ENV FLUENTD_ARGS="-v"
+ENV FLUENTD_ARGS=""
 ENV FLUENTD_CONF="fluent.conf"
 
 EXPOSE 24224 5140
