@@ -26,8 +26,8 @@
 # The Kubernetes kubelet makes a symbolic link to this file on the host machine
 # in the /var/log/containers directory which includes the pod name and the Kubernetes
 # container name:
-#    synthetic-logger-0.25lps-pod_default-synth-lgr-997599971ee6366d4a5920d25b79286ad45ff37a74494f262e3bc98d909d0a7b.log 
-#    -> 
+#    synthetic-logger-0.25lps-pod_default-synth-lgr-997599971ee6366d4a5920d25b79286ad45ff37a74494f262e3bc98d909d0a7b.log
+#    ->
 #    /var/lib/docker/containers/997599971ee6366d4a5920d25b79286ad45ff37a74494f262e3bc98d909d0a7b/997599971ee6366d4a5920d25b79286ad45ff37a74494f262e3bc98d909d0a7b-json.log
 # The /var/log directory on the host is mapped to the /var/log directory in the container
 # running this instance of Fluentd and we end up collecting the file:
@@ -44,13 +44,13 @@
 
 # Do not directly collect fluentd's own logs to avoid infinite loops.
 <match fluent.**>
-  type null
+  @type null
 </match>
 
 # Example:
 # {"log":"[info:2016-02-16T16:04:05.930-08:00] Some log text here\n","stream":"stdout","time":"2016-02-17T00:04:05.931087621Z"}
 <source>
-  type tail
+  @type tail
   format json
   time_key time
   path /var/log/containers/*.log
@@ -62,7 +62,7 @@
 </source>
 
 #<match reform.**>
-#  type record_reformer
+#  @type record_reformer
 #  enable_ruby true
 #  tag kubernetes.${tag_suffix[4].split('-')[0..-2].join('-')}
 #</match>
@@ -70,7 +70,7 @@
 # Example:
 # 2015-12-21 23:17:22,066 [salt.state       ][INFO    ] Completed state [net.ipv4.ip_forward] at time 23:17:22.066081
 <source>
-  type tail
+  @type tail
   format /^(?<time>[^ ]* [^ ,]*)[^\[]*\[[^\]]*\]\[(?<severity>[^ \]]*) *\] (?<message>.*)$/
   time_format %Y-%m-%d %H:%M:%S
   path /var/log/salt/minion
@@ -81,7 +81,7 @@
 # Example:
 # Dec 21 23:17:22 gke-foo-1-1-4b5cbd14-node-4eoj startupscript: Finished running startup script /var/run/google.startup.script
 <source>
-  type tail
+  @type tail
   format syslog
   path /var/log/startupscript.log
   pos_file /var/log/gcp-startupscript.log.pos
@@ -92,7 +92,7 @@
 # time="2016-02-04T06:51:03.053580605Z" level=info msg="GET /containers/json"
 # time="2016-02-04T07:53:57.505612354Z" level=error msg="HTTP Error" err="No such image: -f" statusCode=404
 <source>
-  type tail
+  @type tail
   format /^time="(?<time>[^)]*)" level=(?<severity>[^ ]*) msg="(?<message>[^"]*)"( err="(?<error>[^"]*)")?( statusCode=($<status_code>\d+))?/
   time_format %Y-%m-%dT%H:%M:%S.%NZ
   path /var/log/docker.log
@@ -103,7 +103,7 @@
 # Example:
 # 2016/02/04 06:52:38 filePurge: successfully removed file /var/etcd/data/member/wal/00000000000006d0-00000000010a23d1.wal
 <source>
-  type tail
+  @type tail
   # Not parsing this, because it doesn't have anything particularly useful to
   # parse out of it (like severities).
   format none
@@ -119,7 +119,7 @@
 # Example:
 # I0204 07:32:30.020537    3368 server.go:1048] POST /stats/container/: (13.972191ms) 200 [[Go-http-client/1.1] 10.244.1.3:40537]
 <source>
-  type tail
+  @type tail
   format multiline
   multiline_flush_interval 5s
   format_firstline /^\w\d{4}/
@@ -133,7 +133,7 @@
 # Example:
 # I0204 07:00:19.604280       5 handlers.go:131] GET /api/v1/nodes: (1.624207ms) 200 [[kube-controller-manager/v1.1.3 (linux/amd64) kubernetes/6a81b50] 127.0.0.1:38266]
 <source>
-  type tail
+  @type tail
   format multiline
   multiline_flush_interval 5s
   format_firstline /^\w\d{4}/
@@ -147,7 +147,7 @@
 # Example:
 # I0204 06:55:31.872680       5 servicecontroller.go:277] LB already exists and doesn't need update for service kube-system/kube-ui
 <source>
-  type tail
+  @type tail
   format multiline
   multiline_flush_interval 5s
   format_firstline /^\w\d{4}/
@@ -161,7 +161,7 @@
 # Example:
 # W0204 06:49:18.239674       7 reflector.go:245] pkg/scheduler/factory/factory.go:193: watch of *api.Service ended with: 401: The event in requested index is outdated and cleared (the requested history has been cleared [2578313/2577886]) [2579312]
 <source>
-  type tail
+  @type tail
   format multiline
   multiline_flush_interval 5s
   format_firstline /^\w\d{4}/
@@ -175,7 +175,7 @@
 # see https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter
 #<filter kubernetes.var.lib.docker.containers.*.*.log>
 <filter kubernetes.**>
-  type kubernetes_metadata
+  @type kubernetes_metadata
   verify_ssl false
 </filter>
 
@@ -184,7 +184,7 @@
 # compute.googleapis.com service rather than container.googleapis.com to keep
 # them separate since most users don't care about the node logs.
 <match kubernetes.**>
-  type google_cloud
+  @type google_cloud
   # Set the buffer type to file to improve the reliability and reduce the memory consumption
   buffer_type file
   buffer_path /var/log/fluentd-buffers/kubernetes.containers.buffer
@@ -193,10 +193,10 @@
   buffer_queue_full_action drop_oldest_chunk
   # Set the chunk limit conservatively to avoid exceeding the GCL limit
   # of 10MiB per write request.
-  buffer_chunk_limit 2M
+  buffer_chunk_limit {{getv "/fluentd/out/kubesys/buffer/chunk/limit"}}
   # Cap the combined memory usage of this buffer and the one below to
   # 2MiB/chunk * (6 + 2) chunks = 16 MiB
-  buffer_queue_limit 6
+  buffer_queue_limit {{getv "/fluentd/out/kubesys/buffer/queue/limit"}}
   # Never wait more than 5 seconds before flushing logs in the non-error case.
   flush_interval 5s
   # Never wait longer than 30 seconds between retries.
@@ -204,11 +204,11 @@
   # Disable the limit on the number of retries (retry forever).
   disable_retry_limit
   # Use multiple threads for processing.
-  num_threads 2
+  num_threads {{getv "/fluentd/out/kubesys/num/threads"}}
 </match>
 
 #<filter kubernetes.**>
-#  type record_transformer
+#  @type record_transformer
 #  <record>
 #    tag ${tag}
 #  </record>
@@ -217,15 +217,15 @@
 # Keep a smaller buffer here since these logs are less important than the user's
 # container logs.
 <match **>
-  type google_cloud
+  @type google_cloud
   detect_subservice false
   buffer_type file
   buffer_path /var/log/fluentd-buffers/kubernetes.system.buffer
   buffer_queue_full_action drop_oldest_chunk
-  buffer_chunk_limit 2M
-  buffer_queue_limit 2
+  buffer_chunk_limit {{getv "/fluentd/out/kubeuser/buffer/chunk/limit"}}
+  buffer_queue_limit {{getv "/fluentd/out/kubeuser/buffer/queue/limit"}}
   flush_interval 5s
   max_retry_wait 30
   disable_retry_limit
-  num_threads 2
+  num_threads {{getv "/fluentd/out/kubeuser/num/threads"}}
 </match>
