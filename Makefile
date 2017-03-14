@@ -42,7 +42,7 @@ travis-env:
 	travis env set DOCKER_USERNAME $(DOCKER_USERNAME)
 	travis env set DOCKER_PASSWORD $(DOCKER_PASSWORD)
 
-test:
+test: build
 	@echo There are no tests available for now. Skipping
 
 save-docker-cache: $(DOCKER_CACHE)
