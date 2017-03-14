@@ -1,0 +1,11 @@
+[template]
+src = "fluent.conf.tmpl"
+dest = "/fluentd/etc/fluent.conf"
+keys = [
+    "/fluentd/out/kubesys/buffer/chunk/limit",
+    "/fluentd/out/kubesys/buffer/queue/limit",
+    "/fluentd/out/kubesys/num/threads",
+    "/fluentd/out/kubeuser/buffer/chunk/limit",
+    "/fluentd/out/kubeuser/buffer/queue/limit",
+    "/fluentd/out/kubeuser/num/threads",
+]
