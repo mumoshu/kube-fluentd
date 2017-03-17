@@ -15,12 +15,14 @@ Based on:
 
 ## Supported tags
 
- * `latest`/`0.14.9-0.9.5` (Fluentd v0.14.9)
+ * `latest`/`0.14.13-0.9.7` (Fluentd v0.14.13)
 
 Naming convention for images is `$FLUENTD_VERSION`-`$KUBE_FLUENTD_VERSION`
 
 ## Changelog
 
+* `0.9.7`
+  * fluentd.conf is customizable via environment variables (#3, thanks to @cw-hayashi)
 * `0.9.6`
   * Fix the fluentd OOM issue when ingesting a lot of log
     * Also see https://github.com/fluent/fluentd/issues/1260 for why we don't use `overflow_action block`
