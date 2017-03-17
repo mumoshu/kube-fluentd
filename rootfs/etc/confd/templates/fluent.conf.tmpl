@@ -190,7 +190,7 @@
   buffer_path /var/log/fluentd-buffers/kubernetes.containers.buffer
   # Set queue_full action to block because we want to pause gracefully
   # in case of the off-the-limits load instead of throwing an exception
-  buffer_queue_full_action drop_oldest_chunk
+  buffer_queue_full_action block
   # Set the chunk limit conservatively to avoid exceeding the GCL limit
   # of 10MiB per write request.
   buffer_chunk_limit {{getv "/fluentd/out/kubesys/buffer/chunk/limit"}}
@@ -221,7 +221,7 @@
   detect_subservice false
   buffer_type file
   buffer_path /var/log/fluentd-buffers/kubernetes.system.buffer
-  buffer_queue_full_action drop_oldest_chunk
+  buffer_queue_full_action block
   buffer_chunk_limit {{getv "/fluentd/out/kubeuser/buffer/chunk/limit"}}
   buffer_queue_limit {{getv "/fluentd/out/kubeuser/buffer/queue/limit"}}
   flush_interval 5s
