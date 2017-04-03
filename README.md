@@ -15,12 +15,14 @@ Based on:
 
 ## Supported tags
 
- * `latest`/`0.14.13-0.9.8` (Fluentd v0.14.13)
+ * `latest`/`0.14.14-0.9.9` (Fluentd v0.14.1４)
 
 Naming convention for images is `$FLUENTD_VERSION`-`$KUBE_FLUENTD_VERSION`
 
 ## Changelog
 
+* `0.9.9`
+  * Bump Fluentd to 0.14.14 to incorporate the fix for https://github.com/fluent/fluentd/issues/1485
 * `0.9.8`
   * Set buffer_queue_full_action to `block` for tail plugins so that we won't drop messages anymore
 * `0.9.7`
