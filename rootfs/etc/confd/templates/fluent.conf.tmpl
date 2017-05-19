@@ -193,10 +193,10 @@
   buffer_queue_full_action block
   # Set the chunk limit conservatively to avoid exceeding the GCL limit
   # of 10MiB per write request.
-  buffer_chunk_limit {{getv "/fluentd/out/kubesys/buffer/chunk/limit"}}
+  buffer_chunk_limit {{getv "/fluentd/out/kubeuser/buffer/chunk/limit"}}
   # Cap the combined memory usage of this buffer and the one below to
   # 2MiB/chunk * (6 + 2) chunks = 16 MiB
-  buffer_queue_limit {{getv "/fluentd/out/kubesys/buffer/queue/limit"}}
+  buffer_queue_limit {{getv "/fluentd/out/kubeuser/buffer/queue/limit"}}
   # Never wait more than 5 seconds before flushing logs in the non-error case.
   flush_interval 5s
   # Never wait longer than 30 seconds between retries.
@@ -204,7 +204,7 @@
   # Disable the limit on the number of retries (retry forever).
   disable_retry_limit
   # Use multiple threads for processing.
-  num_threads {{getv "/fluentd/out/kubesys/num/threads"}}
+  num_threads {{getv "/fluentd/out/kubeuser/num/threads"}}
 </match>
 
 #<filter kubernetes.**>
@@ -222,10 +222,10 @@
   buffer_type file
   buffer_path /var/log/fluentd-buffers/kubernetes.system.buffer
   buffer_queue_full_action block
-  buffer_chunk_limit {{getv "/fluentd/out/kubeuser/buffer/chunk/limit"}}
-  buffer_queue_limit {{getv "/fluentd/out/kubeuser/buffer/queue/limit"}}
+  buffer_chunk_limit {{getv "/fluentd/out/kubesys/buffer/chunk/limit"}}
+  buffer_queue_limit {{getv "/fluentd/out/kubesys/buffer/queue/limit"}}
   flush_interval 5s
   max_retry_wait 30
   disable_retry_limit
-  num_threads {{getv "/fluentd/out/kubeuser/num/threads"}}
+  num_threads {{getv "/fluentd/out/kubesys/num/threads"}}
 </match>
