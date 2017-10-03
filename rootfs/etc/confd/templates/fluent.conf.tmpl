@@ -202,7 +202,8 @@
   # Never wait longer than 30 seconds between retries.
   max_retry_wait 30
   # Disable the limit on the number of retries (retry forever).
-  disable_retry_limit
+  #disable_retry_limit
+  retry_limit {{getv "/fluentd/out/kubeuser/retry/limit"}}
   # Use multiple threads for processing.
   num_threads {{getv "/fluentd/out/kubeuser/num/threads"}}
 </match>
@@ -226,6 +227,7 @@
   buffer_queue_limit {{getv "/fluentd/out/kubesys/buffer/queue/limit"}}
   flush_interval 5s
   max_retry_wait 30
-  disable_retry_limit
+  #disable_retry_limit
+  retry_limit {{getv "/fluentd/out/kubesys/retry/limit"}}
   num_threads {{getv "/fluentd/out/kubesys/num/threads"}}
 </match>

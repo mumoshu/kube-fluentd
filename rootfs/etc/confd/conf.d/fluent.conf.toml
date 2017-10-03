@@ -5,7 +5,9 @@ keys = [
     "/fluentd/out/kubesys/buffer/chunk/limit",
     "/fluentd/out/kubesys/buffer/queue/limit",
     "/fluentd/out/kubesys/num/threads",
+    "/fluentd/out/kubesys/retry/limit",
     "/fluentd/out/kubeuser/buffer/chunk/limit",
     "/fluentd/out/kubeuser/buffer/queue/limit",
     "/fluentd/out/kubeuser/num/threads",
+    "/fluentd/out/kubeuser/retry/limit",
 ]
