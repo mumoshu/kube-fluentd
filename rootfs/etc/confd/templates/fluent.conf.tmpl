@@ -198,11 +198,11 @@
   # 2MiB/chunk * (6 + 2) chunks = 16 MiB
   buffer_queue_limit {{getv "/fluentd/out/kubeuser/buffer/queue/limit"}}
   # Never wait more than 5 seconds before flushing logs in the non-error case.
-  flush_interval 5s
+  flush_interval {{getv "/fluentd/out/kubeuser/buffer/flush/interval"}}
   # Never wait longer than 30 seconds between retries.
   max_retry_wait 30
-  # Disable the limit on the number of retries (retry forever).
-  #disable_retry_limit
+  # if Disable the limit on the number of retries (retry forever), set "/fluentd/out/kubeuser/retry/limit/disable" to false
+  disable_retry_limit {{getv "/fluentd/out/kubeuser/retry/limit/disable"}}
   retry_limit {{getv "/fluentd/out/kubeuser/retry/limit"}}
   # Use multiple threads for processing.
   num_threads {{getv "/fluentd/out/kubeuser/num/threads"}}
@@ -225,9 +225,9 @@
   buffer_queue_full_action block
   buffer_chunk_limit {{getv "/fluentd/out/kubesys/buffer/chunk/limit"}}
   buffer_queue_limit {{getv "/fluentd/out/kubesys/buffer/queue/limit"}}
-  flush_interval 5s
+  flush_interval {{getv "/fluentd/out/kubesys/buffer/flush/interval"}}
   max_retry_wait 30
-  #disable_retry_limit
+  disable_retry_limit {{getv "/fluentd/out/kubesys/retry/limit/disable"}}
   retry_limit {{getv "/fluentd/out/kubesys/retry/limit"}}
   num_threads {{getv "/fluentd/out/kubesys/num/threads"}}
 </match>
