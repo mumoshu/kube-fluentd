@@ -205,7 +205,7 @@
     {{if eq (getv "/fluentd/out/kubeuser/retry/forever") "true" -}}
     retry_forever true
     {{else -}}
-    retry_max_times {{getv "/fluentd/out/kubeuser/retry/limit"}}
+    retry_max_times {{getv "/fluentd/out/kubeuser/retry/max/times"}}
     {{end -}}
     # Use multiple threads for processing.
     flush_thread_count {{getv "/fluentd/out/kubeuser/flush/thread/count"}}
@@ -243,7 +243,7 @@
     {{if eq (getv "/fluentd/out/kubesys/retry/forever") "true" -}}
     retry_forever true
     {{else -}}
-    retry_max_times {{getv "/fluentd/out/kubesys/retry/limit"}}
+    retry_max_times {{getv "/fluentd/out/kubesys/retry/max/times"}}
     {{end -}}
     # Use multiple threads for processing.
     flush_thread_count {{getv "/fluentd/out/kubesys/flush/thread/count"}}

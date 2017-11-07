@@ -8,7 +8,7 @@ keys = [
     "/fluentd/out/kubeuser/buffer/flush/interval",
     "/fluentd/out/kubeuser/buffer/retry/max/interval",
     "/fluentd/out/kubeuser/retry/forever",
-    "/fluentd/out/kubeuser/retry/limit",
+    "/fluentd/out/kubeuser/retry/max/times",
     "/fluentd/out/kubeuser/flush/thread/count",
     "/fluentd/out/kubesys/buffer/overflow/action",
     "/fluentd/out/kubesys/buffer/chunk/limit/size",
@@ -16,6 +16,6 @@ keys = [
     "/fluentd/out/kubesys/buffer/flush/interval",
     "/fluentd/out/kubesys/buffer/retry/max/interval",
     "/fluentd/out/kubesys/retry/forever",
-    "/fluentd/out/kubesys/retry/limit",
+    "/fluentd/out/kubesys/retry/max/times",
     "/fluentd/out/kubesys/flush/thread/count",
 ]
