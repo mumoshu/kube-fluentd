@@ -186,25 +186,30 @@
 <match kubernetes.**>
   @type google_cloud
   # Set the buffer type to file to improve the reliability and reduce the memory consumption
-  buffer_type file
-  buffer_path /var/log/fluentd-buffers/kubernetes.containers.buffer
-  # Set queue_full action to block because we want to pause gracefully
-  # in case of the off-the-limits load instead of throwing an exception
-  buffer_queue_full_action block
-  # Set the chunk limit conservatively to avoid exceeding the GCL limit
-  # of 10MiB per write request.
-  buffer_chunk_limit {{getv "/fluentd/out/kubeuser/buffer/chunk/limit"}}
-  # Cap the combined memory usage of this buffer and the one below to
-  # 2MiB/chunk * (6 + 2) chunks = 16 MiB
-  buffer_queue_limit {{getv "/fluentd/out/kubeuser/buffer/queue/limit"}}
-  # Never wait more than 5 seconds before flushing logs in the non-error case.
-  flush_interval 5s
-  # Never wait longer than 30 seconds between retries.
-  max_retry_wait 30
-  # Disable the limit on the number of retries (retry forever).
-  disable_retry_limit
-  # Use multiple threads for processing.
-  num_threads {{getv "/fluentd/out/kubeuser/num/threads"}}
+  <buffer>
+    @type file
+    path /var/log/fluentd-buffers/kubernetes.containers.buffer
+    # Set queue_full action to block because we want to pause gracefully
+    # in case of the off-the-limits load instead of throwing an exception
+    overflow_action {{getv "/fluentd/out/kubeuser/buffer/overflow/action"}}
+    # Set the chunk limit conservatively to avoid exceeding the GCL limit
+    # of 10MiB per write request.
+    chunk_limit_size {{getv "/fluentd/out/kubeuser/buffer/chunk/limit/size"}}
+    # Cap the combined memory usage of this buffer and the one below to
+    total_limit_size  {{getv "/fluentd/out/kubeuser/buffer/total/limit/size"}}
+    # Never wait more than 5 seconds before flushing logs in the non-error case.
+    flush_interval {{getv "/fluentd/out/kubeuser/buffer/flush/interval"}}
+    # Never wait longer than 30 seconds between retries.
+    retry_max_interval {{getv "/fluentd/out/kubeuser/buffer/retry/max/interval"}}
+    # if you would unset the limit on the number of retries, set "/fluentd/out/kubeuser/retry/forever" to "true"
+    {{if eq (getv "/fluentd/out/kubeuser/retry/forever") "true" -}}
+    retry_forever true
+    {{else -}}
+    retry_max_times {{getv "/fluentd/out/kubeuser/retry/max/times"}}
+    {{end -}}
+    # Use multiple threads for processing.
+    flush_thread_count {{getv "/fluentd/out/kubeuser/flush/thread/count"}}
+  </buffer>
 </match>
 
 #<filter kubernetes.**>
@@ -219,13 +224,28 @@
 <match **>
   @type google_cloud
   detect_subservice false
-  buffer_type file
-  buffer_path /var/log/fluentd-buffers/kubernetes.system.buffer
-  buffer_queue_full_action block
-  buffer_chunk_limit {{getv "/fluentd/out/kubesys/buffer/chunk/limit"}}
-  buffer_queue_limit {{getv "/fluentd/out/kubesys/buffer/queue/limit"}}
-  flush_interval 5s
-  max_retry_wait 30
-  disable_retry_limit
-  num_threads {{getv "/fluentd/out/kubesys/num/threads"}}
+  <buffer>
+    @type file
+    path /var/log/fluentd-buffers/kubernetes.system.buffer
+    # Set queue_full action to block because we want to pause gracefully
+    # in case of the off-the-limits load instead of throwing an exception
+    overflow_action {{getv "/fluentd/out/kubesys/buffer/overflow/action"}}
+    # Set the chunk limit conservatively to avoid exceeding the GCL limit
+    # of 10MiB per write request.
+    chunk_limit_size {{getv "/fluentd/out/kubesys/buffer/chunk/limit/size"}}
+    # Cap the combined memory usage of this buffer and the one below to
+    total_limit_size  {{getv "/fluentd/out/kubesys/buffer/total/limit/size"}}
+    # Never wait more than 5 seconds before flushing logs in the non-error case.
+    flush_interval {{getv "/fluentd/out/kubesys/buffer/flush/interval"}}
+    # Never wait longer than 30 seconds between retries.
+    retry_max_interval {{getv "/fluentd/out/kubesys/buffer/retry/max/interval"}}
+    # if you would unset the limit on the number of retries, set "/fluentd/out/kubesys/retry/forever" to "true"
+    {{if eq (getv "/fluentd/out/kubesys/retry/forever") "true" -}}
+    retry_forever true
+    {{else -}}
+    retry_max_times {{getv "/fluentd/out/kubesys/retry/max/times"}}
+    {{end -}}
+    # Use multiple threads for processing.
+    flush_thread_count {{getv "/fluentd/out/kubesys/flush/thread/count"}}
+  </buffer>
 </match>

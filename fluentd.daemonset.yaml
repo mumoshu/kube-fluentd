@@ -12,6 +12,12 @@ spec:
       labels:
         k8s-app: fluentd-logging
     spec:
+      tolerations:
+        - operator: Exists
+          effect: NoSchedule
+        - operator: Exists
+          effect: NoExecute
+        - operator: Exists
       dnsPolicy: Default
       containers:
       - name: fluentd-cloud-logging
