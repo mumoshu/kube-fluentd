@@ -18,7 +18,7 @@ spec:
         - operator: Exists
           effect: NoExecute
         - operator: Exists
-      dnsPolica: Default
+      dnsPolicy: Default
       containers:
       - name: fluentd-cloud-logging
         image: mumoshu/kube-fluentd:0.14.1
