@@ -1,4 +1,4 @@
-FROM gcr.io/google_containers/ubuntu-slim:0.4
+FROM gcr.io/google_containers/ubuntu-slim:0.14
 MAINTAINER Yusuke KUOKA <ykuoka@gmail.com>
 
 # Disable prompts from apt.
