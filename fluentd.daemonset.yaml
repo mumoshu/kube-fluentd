@@ -12,16 +12,17 @@ spec:
       labels:
         k8s-app: fluentd-logging
     spec:
+      serviceAccountName: fluentd-cloud-logging
       tolerations:
-        - operator: Exists
-          effect: NoSchedule
-        - operator: Exists
-          effect: NoExecute
-        - operator: Exists
+      - operator: Exists
+        effect: NoSchedule
+      - operator: Exists
+        effect: NoExecute
+      - operator: Exists
       dnsPolicy: Default
       containers:
       - name: fluentd-cloud-logging
-        image: mumoshu/kube-fluentd:0.14.1
+        image: mumoshu/kube-fluentd:0.14.14-0.9.9
         resources:
           limits:
             memory: 200Mi
