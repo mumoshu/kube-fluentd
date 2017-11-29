@@ -222,8 +222,24 @@
 # Keep a smaller buffer here since these logs are less important than the user's
 # container logs.
 <match **>
+  {{if exists "/dd/api/key" -}}
+  @type datadog
+  {{if exists "/dd/service" -}}
+  service {{getv "/dd/service"}}
+  {{end -}}
+  {{if exists "/dd/source" -}}
+  source {{getv "/dd/source"}}
+  {{end -}}
+  {{if exists "/dd/sourcecategory" -}}
+  source_category {{getv "/dd/sourcecategory"}}
+  {{end -}}
+  {{if exists "/dd/tags" -}}
+  tags {{getv "/dd/tags"}}
+  {{end -}}
+  {{else -}}
   @type google_cloud
   detect_subservice false
+  {{end -}}
   <buffer>
     @type file
     path /var/log/fluentd-buffers/kubernetes.system.buffer

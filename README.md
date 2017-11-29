@@ -15,12 +15,15 @@ Based on:
 
 ## Supported tags
 
- * `latest`/`0.14.14-0.9.9` (Fluentd v0.14.1４)
+ * `latest`/`0.14.22-0.9.9` (Fluentd v0.14.22)
 
 Naming convention for images is `$FLUENTD_VERSION`-`$KUBE_FLUENTD_VERSION`
 
 ## Changelog
 
+* `0.9.10-rc.1`
+  * Bump Fluentd to 0.14.22
+  * Support for credentials from volume mounts (See `fluentd.daemonset.credfromfile.yaml`)
 * `0.9.9`
   * Bump Fluentd to 0.14.14 to incorporate the fix for https://github.com/fluent/fluentd/issues/1485
 * `0.9.8`
@@ -46,12 +49,13 @@ Naming convention for images is `$FLUENTD_VERSION`-`$KUBE_FLUENTD_VERSION`
 
 ## Usage in Kubernetes
 
+(1) Create a new GCP service account key in https://console.cloud.google.com/apis/credentials and obtain `${gcp_project_name}-${service_account_key_id}.json1`
+
+(2) Run the following commands:
+
 ```
-# (1) Provide GOOGLE_FLEUNTD_* environments appropriate values
-# (2) Build the definition for a k8s secret object
-$ make fluentd.secret.yaml
-# (3) Create the secret object from the definition
-$ kubectl create -f fluentd.secret.yaml
-# (4) Create a fluentd daemonset that reads and depends on the secret
-$ kubectl create -f fluentd.daemonset.yaml
+$ cp ${gcp_project_name}-${service_account_key_id}.json application_default_credentials.json
+$ kubectl kubectl create secret generic kube-fluentd-google-application-default-credentials --from-file application_default_credentials.json --namespace kube-system
+$ kubectl create -f fluentd.rbac.yaml
+$ kubectl create -f fluentd.daemonset.credfromfile.yaml
 ```

@@ -33,6 +33,7 @@ RUN apt-get update -y \
     # We at least need https://github.com/GoogleCloudPlatform/fluent-plugin-google-cloud/commit/0705183a98a59d327e82661a829d7e5caf99a82b
     # or we'll end up with both fluentd 0.12.x and 0.14.x installed!
     gem specific_install -l 'https://github.com/GoogleCloudPlatform/fluent-plugin-google-cloud.git' -b master && \
+    gem install fluent-plugin-datadog-log -v 0.1.0.rc3 && \
     gem install fluent-plugin-kubernetes_metadata_filter && \
     gem install fluent-plugin-record-reformer && \
     gem uninstall specific_install && \
