@@ -177,6 +177,7 @@
 <filter kubernetes.**>
   @type kubernetes_metadata
   verify_ssl false
+  annotation_match ["^kubernetes.io/created-by"]
 </filter>
 
 # We use 2 output stanzas - one to handle the container logs and one to handle
@@ -184,7 +185,23 @@
 # compute.googleapis.com service rather than container.googleapis.com to keep
 # them separate since most users don't care about the node logs.
 <match kubernetes.**>
+  {{if exists "/dd/api/key" -}}
+  @type datadog_log
+  {{if exists "/dd/service" -}}
+  service {{getv "/dd/service"}}
+  {{end -}}
+  {{if exists "/dd/source" -}}
+  source {{getv "/dd/source"}}
+  {{end -}}
+  {{if exists "/dd/sourcecategory" -}}
+  source_category {{getv "/dd/sourcecategory"}}
+  {{end -}}
+  {{if exists "/dd/tags" -}}
+  tags {{getv "/dd/tags"}}
+  {{end -}}
+  {{else -}}
   @type google_cloud
+  {{end -}}
   # Set the buffer type to file to improve the reliability and reduce the memory consumption
   <buffer>
     @type file
@@ -223,7 +240,7 @@
 # container logs.
 <match **>
   {{if exists "/dd/api/key" -}}
-  @type datadog
+  @type datadog_log
   {{if exists "/dd/service" -}}
   service {{getv "/dd/service"}}
   {{end -}}

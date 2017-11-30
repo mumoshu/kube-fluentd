@@ -53,9 +53,19 @@ Naming convention for images is `$FLUENTD_VERSION`-`$KUBE_FLUENTD_VERSION`
 
 (2) Run the following commands:
 
+For Google Stackdriver Logging:
+
 ```
 $ cp ${gcp_project_name}-${service_account_key_id}.json application_default_credentials.json
 $ kubectl kubectl create secret generic kube-fluentd-google-application-default-credentials --from-file application_default_credentials.json --namespace kube-system
 $ kubectl create -f fluentd.rbac.yaml
 $ kubectl create -f fluentd.daemonset.credfromfile.yaml
+```
+
+For Datadog Log Management:
+
+```
+$ kubectl create secret generic datadog --from-literal=api-key=$DD_API_KEY
+$ kubectl create -f fluentd.rbac.yaml
+$ kubectl create -f fluentd.datadog.daemonset.yaml
 ```

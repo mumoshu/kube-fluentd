@@ -1,4 +1,4 @@
-KUBE_FLUENTD_VERSION ?= 0.9.10-rc.1
+KUBE_FLUENTD_VERSION ?= 0.9.10-rc.14
 FLUENTD_VERSION ?= 0.14.22
 
 REPOSITORY ?= mumoshu/kube-fluentd
@@ -8,12 +8,13 @@ ALIAS ?= $(REPOSITORY):$(FLUENTD_VERSION)
 
 BUILD_ROOT ?= build/$(TAG)
 DOCKERFILE ?= $(BUILD_ROOT)/Dockerfile
+DOCKERIGNORE ?= $(BUILD_ROOT)/.dockerignore
 ROOTFS ?= $(BUILD_ROOT)/rootfs
 DOCKER_CACHE ?= docker-cache
 SAVED_IMAGE ?= $(DOCKER_CACHE)/image-$(FLUENTD_VERSION).tar
 
 .PHONY: build
-build: $(DOCKERFILE) $(ROOTFS)
+build: $(DOCKERFILE) $(DOCKERIGNORE) $(ROOTFS)
 	./build-confd
 	cd $(BUILD_ROOT) && docker build -t $(IMAGE) . && docker tag $(IMAGE) $(ALIAS)
 
@@ -26,6 +27,9 @@ publish:
 
 $(DOCKERFILE): $(BUILD_ROOT)
 	sed 's/%%FLUENTD_VERSION%%/'"$(FLUENTD_VERSION)"'/g;' Dockerfile.template > $(DOCKERFILE)
+
+$(DOCKERIGNORE): $(BUILD_ROOT)
+	cp .dockerignore $(DOCKERIGNORE)
 
 $(ROOTFS): $(BUILD_ROOT)
 	cp -R rootfs $(ROOTFS)

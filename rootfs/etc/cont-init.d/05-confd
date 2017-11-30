@@ -2,7 +2,7 @@
 
 if [ -z "$GOOGLE_FLUENTD_PRIVATE_KEY_ID" ]; then
   echo GOOGLE_FLUENTD_PRIVATE_KEY_ID is not set. Falling back to application_default_credentials.json possibly provided from a volume mount. 1>&2
-  rm /etc/confd/conf.d/fluent.conf.toml
+  rm /etc/confd/conf.d/application_default_credentials.toml
 
   if [ ! -f "/etc/google/auth/application_default_credentials.json" ]; then
     echo /etc/google/auth/application_default_credentials.json does not exist. This container will fail in confd templating... 1>&2
@@ -10,3 +10,5 @@ if [ -z "$GOOGLE_FLUENTD_PRIVATE_KEY_ID" ]; then
 fi
 
 confd -log-level debug -onetime -backend env
+
+cat /fluentd/etc/fluent.conf

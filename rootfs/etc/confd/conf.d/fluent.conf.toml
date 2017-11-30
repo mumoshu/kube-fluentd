@@ -2,6 +2,11 @@
 src = "fluent.conf.tmpl"
 dest = "/fluentd/etc/fluent.conf"
 keys = [
+    "/dd/api/key",
+    "/dd/service",
+    "/dd/source",
+    "/dd/sourcecategory",
+    "/dd/tags",
     "/fluentd/out/kubeuser/buffer/overflow/action",
     "/fluentd/out/kubeuser/buffer/chunk/limit/size",
     "/fluentd/out/kubeuser/buffer/total/limit/size",
