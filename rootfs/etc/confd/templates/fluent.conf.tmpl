@@ -43,6 +43,14 @@
 # Kubernetes pod has been restarted (resulting in a several Docker container IDs).
 
 # Do not directly collect fluentd's own logs to avoid infinite loops.
+
+# See https://github.com/fluent/fluentd/blob/v1.0.0/lib/fluent/system_config.rb#L50 for available config params
+<system>
+  <log>
+    format json
+  </log>
+</system>
+
 <match fluent.**>
   @type null
 </match>
