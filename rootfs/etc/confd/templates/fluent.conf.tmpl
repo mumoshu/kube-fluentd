@@ -42,8 +42,6 @@
 # the name of the Kubernetes container regardless of how many times the
 # Kubernetes pod has been restarted (resulting in a several Docker container IDs).
 
-# Do not directly collect fluentd's own logs to avoid infinite loops.
-
 # See https://github.com/fluent/fluentd/blob/v1.0.0/lib/fluent/system_config.rb#L50 for available config params
 <system>
   <log>
@@ -51,9 +49,35 @@
   </log>
 </system>
 
+# Do not directly collect fluentd's own logs to avoid infinite loops.
 <match fluent.**>
   @type null
 </match>
+
+# Expose prometheus metrics
+<source>
+  @type prometheus
+</source>
+
+# Collect prometheus metrics for output buffers
+# See https://github.com/fluent/fluent-plugin-prometheus#prometheus_monitor-input-plugin for more details
+<source>
+  @type monitor_agent
+</source>
+<source>
+  @type prometheus_monitor
+  <labels>
+    host ${hostname}
+  </labels>
+</source>
+
+# Collect prometheus metrics for outputs
+<source>
+  @type prometheus_output_monitor
+  <labels>
+    host ${hostname}
+  </labels>
+</source>
 
 # Example:
 # {"log":"[info:2016-02-16T16:04:05.930-08:00] Some log text here\n","stream":"stdout","time":"2016-02-17T00:04:05.931087621Z"}

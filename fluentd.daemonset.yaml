@@ -64,6 +64,9 @@ spec:
             secretKeyRef:
               name: fluentd
               key: client.x509.cert.url
+        ports:
+        - containerPort: 24231
+          name: prometheus-metrics
         volumeMounts:
         - name: varlog
           mountPath: /var/log

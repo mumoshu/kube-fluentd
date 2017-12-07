@@ -36,6 +36,7 @@ RUN apt-get update -y \
     gem install fluent-plugin-datadog-log -v 0.1.0.rc10 && \
     gem install fluent-plugin-kubernetes_metadata_filter && \
     gem install fluent-plugin-record-reformer && \
+    gem install fluent-plugin-prometheus && \
     gem uninstall specific_install && \
     apt-get remove --purge -y wget build-essential ruby-dev git libgcc-5-dev cpp-5 && \
     apt-get autoremove -y && \
@@ -90,6 +91,9 @@ ENV FLUENTD_ARGS=""
 ENV FLUENTD_CONF="fluent.conf"
 
 EXPOSE 24224 5140
+
+# Prometheus metrics endpoint
+EXPOSE 24231
 
 ENTRYPOINT [ "/init" ]
 
