@@ -1,4 +1,4 @@
-KUBE_FLUENTD_VERSION ?= 0.9.10-rc.16
+KUBE_FLUENTD_VERSION ?= 0.9.10-rc.17
 FLUENTD_VERSION ?= 1.0.0
 
 REPOSITORY ?= mumoshu/kube-fluentd
@@ -15,7 +15,7 @@ SAVED_IMAGE ?= $(DOCKER_CACHE)/image-$(FLUENTD_VERSION).tar
 
 .PHONY: build
 build: $(DOCKERFILE) $(DOCKERIGNORE) $(ROOTFS)
-	./build-confd
+	./get-confd
 	cd $(BUILD_ROOT) && docker build -t $(IMAGE) . && docker tag $(IMAGE) $(ALIAS)
 
 .PHONY: clean
@@ -55,10 +55,9 @@ load-docker-cache: $(DOCKER_CACHE)
 $(DOCKER_CACHE):
 	mkdir -p $(DOCKER_CACHE)
 
-docker-run: DOCKER_CMD ?=
-docker-run:
+docker-run-gcp: DOCKER_CMD ?=
+docker-run-gcp:
 	docker run --rm -it \
-	  --privileged \
 	  -v /mnt/sda1:/mnt/sda1 \
 	  -v /var/lib/docker/containers:/var/lib/docker/containers \
 	  -v /var/log:/var/log \
@@ -100,3 +99,12 @@ export SECRET_YAML
 
 fluentd.secret.yaml:
 	echo "$$SECRET_YAML" > fluentd.secret.yaml
+
+docker-run-dd: DOCKER_CMD ?= sh
+docker-run-dd:
+	docker run --rm -it \
+	  -v /mnt/sda1:/mnt/sda1 \
+	  -v /var/lib/docker/containers:/var/lib/docker/containers \
+	  -v /var/log:/var/log \
+	  -e DD_API_KEY="$(DD_API_KEY)" \
+	$(IMAGE) $(DOCKER_CMD)

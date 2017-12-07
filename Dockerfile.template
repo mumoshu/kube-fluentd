@@ -23,21 +23,17 @@ RUN apt-get update -y \
                     ruby-dev \
                     libjemalloc1 && \
     echo 'gem: --no-document' >> /etc/gemrc && \
-    gem install specific_install && \
+    echo "Running ruby: $(ruby -v)" && \
     # minitest 5.x is required by activesupport. It is not a development dependency but a runtime dependency.
     # minitest 5.x should be bundled in ruby since 2.2 but ruby from ubuntu seems to miss it therefore install it ourselves
     gem install minitest oj && \
     gem install fluentd -v $FLUENTD_VERSION && \
     # We install fluent plugins here because doing so requires build-base and ruby-dev in order to build native extensions
-    # fluent-plugin-google-cloud which supports fluentd 0.14.x is not yet released
-    # We at least need https://github.com/GoogleCloudPlatform/fluent-plugin-google-cloud/commit/0705183a98a59d327e82661a829d7e5caf99a82b
-    # or we'll end up with both fluentd 0.12.x and 0.14.x installed!
-    gem specific_install -l 'https://github.com/GoogleCloudPlatform/fluent-plugin-google-cloud.git' -b master && \
-    gem install fluent-plugin-datadog-log -v 0.1.0.rc10 && \
+    gem install fluent-plugin-google-cloud && \
+    gem install fluent-plugin-datadog-log -v 0.1.0.rc13 && \
     gem install fluent-plugin-kubernetes_metadata_filter && \
     gem install fluent-plugin-record-reformer && \
     gem install fluent-plugin-prometheus && \
-    gem uninstall specific_install && \
     apt-get remove --purge -y wget build-essential ruby-dev git libgcc-5-dev cpp-5 && \
     apt-get autoremove -y && \
     apt-get clean -y && \
