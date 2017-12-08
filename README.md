@@ -21,6 +21,10 @@ Naming convention for images is `$FLUENTD_VERSION`-`$KUBE_FLUENTD_VERSION`
 
 ## Changelog
 
+* `0.9.10-rc.17`
+  * Bump Fluentd to 1.0.0
+  * Support for Datadog Log Management
+  * Expose Prometheus metrics
 * `0.9.10-rc.1`
   * Bump Fluentd to 0.14.22
   * Support for credentials from volume mounts (See `fluentd.daemonset.credfromfile.yaml`)
