@@ -30,7 +30,7 @@ RUN apt-get update -y \
     gem install fluentd -v $FLUENTD_VERSION && \
     # We install fluent plugins here because doing so requires build-base and ruby-dev in order to build native extensions
     gem install fluent-plugin-google-cloud && \
-    gem install fluent-plugin-datadog-log -v 0.1.0.rc13 && \
+    gem install fluent-plugin-datadog-log -v 0.1.0.rc18 && \
     gem install fluent-plugin-kubernetes_metadata_filter && \
     gem install fluent-plugin-record-reformer && \
     gem install fluent-plugin-prometheus && \
