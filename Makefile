@@ -1,4 +1,4 @@
-KUBE_FLUENTD_VERSION ?= 0.9.10-rc.22
+KUBE_FLUENTD_VERSION ?= 0.9.10-rc.23
 FLUENTD_VERSION ?= 1.0.0
 
 REPOSITORY ?= mumoshu/kube-fluentd
@@ -33,6 +33,7 @@ $(DOCKERIGNORE): $(BUILD_ROOT)
 
 $(ROOTFS): $(BUILD_ROOT)
 	cp -R rootfs $(ROOTFS)
+	find $(ROOTFS) | grep \~ | xargs rm
 
 $(BUILD_ROOT):
 	mkdir -p $(BUILD_ROOT)
@@ -106,5 +107,11 @@ docker-run-dd:
 	  -v /mnt/sda1:/mnt/sda1 \
 	  -v /var/lib/docker/containers:/var/lib/docker/containers \
 	  -v /var/log:/var/log \
+	  -v $(shell pwd)/testdata/fluentd/etc/confd/templates:/fluentd/etc/confd/templates \
 	  -e DD_API_KEY="$(DD_API_KEY)" \
+	  -e KUBE_ENV=test \
+	  -e KUBE_CLUSTER=k8s1 \
+	  -e AWS_ACCESS_KEY_ID=dummyid \
+	  -e AWS_SECERET_ACCESS_KEY=dummysecret \
+	  -e S3_BUCKET=mykubeawscluster-test-k8s1 \
 	$(IMAGE) $(DOCKER_CMD)

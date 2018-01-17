@@ -1,0 +1,30 @@
+<match kubernetes.**>
+  @type s3
+  # See https://qiita.com/sonots/items/e3486765b5217c2a34ab
+  hex_random_length 4
+  s3_object_key_format %{hex_random}/%{path}/{{getenv "KUBE_ENV"}}/{{getenv "KUBE_CLUSTER"}}
+  path %Y/%m/%d/%H/%M
+  aws_key_id {{getenv "AWS_ACCESS_KEY_ID"}}
+  aws_sec_key {{getenv "AWS_SECRET_ACCESS_KEY"}}
+  s3_bucket {{getenv "S3_BUCKET"}}
+  s3_endpoint s3-ap-northeast-1.amazonaws.com
+  s3_object_key_format <format string> #(optional; default="%{path}%{time_slice}_%{index}.%{file_extension}")
+  auto_create_bucket false
+  check_apikey_on_start true
+  proxy_uri <proxy uri string> #(optional)
+  <buffer>
+    @type file
+    path /var/log/fluentd-buffers/kubernetes.containers.s3.buffer
+    overflow_action {{getv "/fluentd/out/kubeuser/buffer/overflow/action"}}
+    chunk_limit_size {{getv "/fluentd/out/kubeuser/buffer/chunk/limit/size"}}
+    total_limit_size  {{getv "/fluentd/out/kubeuser/buffer/total/limit/size"}}
+    flush_interval {{getv "/fluentd/out/kubeuser/buffer/flush/interval"}}
+    retry_max_interval {{getv "/fluentd/out/kubeuser/buffer/retry/max/interval"}}
+    {{if eq (getv "/fluentd/out/kubeuser/retry/forever") "true" -}}
+    retry_forever true
+    {{else -}}
+    retry_max_times {{getv "/fluentd/out/kubeuser/retry/max/times"}}
+    {{end -}}
+    flush_thread_count {{getv "/fluentd/out/kubeuser/flush/thread/count"}}
+  </buffer>
+</match>
