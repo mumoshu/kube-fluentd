@@ -46,8 +46,7 @@ spec:
             ["env:test", "kube_cluster:k8s1"]
         ports:
         - containerPort: 24231
-          name: prometheus-metrics
-        env:
+          name: prometheus
         volumeMounts:
         - name: varlog
           mountPath: /var/log
