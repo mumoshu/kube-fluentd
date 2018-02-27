@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -vxe
+
+export CONFD_VERSION=0.14.0
+
+mkdir -p confd/$CONFD_VERSION
+
+if [ ! -f confd/$CONFD_VERSION/confd ]; then
+  curl -o confd/$CONFD_VERSION/confd -L https://github.com/kelseyhightower/confd/releases/download/v$CONFD_VERSION/confd-$CONFD_VERSION-linux-amd64
+fi
+
+mkdir -p rootfs/bin
+
+cp confd/$CONFD_VERSION/confd rootfs/bin/
