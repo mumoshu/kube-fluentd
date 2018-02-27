@@ -33,7 +33,7 @@ $(DOCKERIGNORE): $(BUILD_ROOT)
 
 $(ROOTFS): $(BUILD_ROOT)
 	cp -R rootfs $(ROOTFS)
-	find $(ROOTFS) | grep \~ | xargs rm
+	find $(ROOTFS) -type f -name '*~' -exec rm {} +
 
 $(BUILD_ROOT):
 	mkdir -p $(BUILD_ROOT)
