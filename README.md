@@ -61,7 +61,7 @@ For Google Stackdriver Logging:
 
 ```
 $ cp ${gcp_project_name}-${service_account_key_id}.json application_default_credentials.json
-$ kubectl kubectl create secret generic kube-fluentd-google-application-default-credentials --from-file application_default_credentials.json --namespace kube-system
+$ kubectl create secret generic kube-fluentd-google-application-default-credentials --from-file application_default_credentials.json --namespace kube-system
 $ kubectl create -f fluentd.rbac.yaml
 $ kubectl create -f fluentd.daemonset.credfromfile.yaml
 ```
